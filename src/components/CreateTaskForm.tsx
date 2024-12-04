@@ -12,6 +12,7 @@ import {
 import { PlusIcon } from "@radix-ui/react-icons";
 import { FormEventHandler } from "react";
 import { z } from "zod";
+import { useTasks } from "../hooks/UseTasks";
 
 /* esquema dos dados */
 const CreateTaskSchemma = z.object({
@@ -22,8 +23,10 @@ const CreateTaskSchemma = z.object({
 });
 
 export const CreateTaskForm: React.FC = () => {
+    const { createTask } = useTasks();
+
     /* submit dos dados */
-    const handleSubmit: FormEventHandler<HTMLFormElement> = (ev) => {
+    const handleSubmit: FormEventHandler<HTMLFormElement> = async (ev) => {
         ev.preventDefault();
 
         /* aqui captura os dados do formulário */
@@ -46,7 +49,7 @@ export const CreateTaskForm: React.FC = () => {
             priority,
         });
 
-        alert(JSON.stringify(taskData));
+        await createTask(taskData);
     };
 
     return (
