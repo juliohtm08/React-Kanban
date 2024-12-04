@@ -7,10 +7,10 @@ export interface TasksContextData {
     tasks: Task[];
     createTask: (attributes: Omit<Task, "id">) => Promise<void>;
     updateTask: (
-        id: number,
+        id: string,
         attributes: Partial<Omit<Task, "id">>
     ) => Promise<void>;
-    deleteTask: (id: number) => Promise<void>;
+    deleteTask: (id: string) => Promise<void>;
 }
 
 // Cria o contexto de tarefas com valores iniciais.
@@ -39,14 +39,33 @@ export const TaskContextProvider: React.FC<TasksContextProviderProps> = ({
         setTasks((currentState) => [...currentState, newTask]);
     };
 
-    // Função para atualizar uma task
+    // Função para atualizar o status de uma task
     const updateTask = async (
-        id: number,
+        id: string,
         attributes: Partial<Omit<Task, "id">>
-    ) => {};
+    ) => {
+        await tasksService.updateTask(id, attributes);
+
+        setTasks((currentState) => {
+            const updatedTasks = [...currentState]; //faz uma cópia da task
+
+            const TaskIndex = updatedTasks.findIndex((task) => task.id === id); //encontra o id da task selecionada
+
+            /* adicionar condição de não encontrar a task */
+
+            Object.assign(updatedTasks[TaskIndex], attributes);
+
+            return updatedTasks;
+        });
+    };
 
     // Função para Deletar uma task
-    const deleteTask = async (id: number) => {};
+    const deleteTask = async (id: string) => {
+        await tasksService.deleteTask(id);
+        setTasks((currentState) =>
+            currentState.filter((task) => task.id !== id)
+        );
+    };
 
     // Provedor que disponibiliza os valores e funções do contexto para os componentes filhos.
     return (
